@@ -1,0 +1,32 @@
+{
+
+  "description": "Browse, search and add emojis to Slack with one click",
+  "manifest_version": 2,
+  "name": "Slackmoji",
+  "version": "1.1.0",
+  "homepage_url": "https://slackmoji.com",
+  "icons": {
+    "48": "icons/icon-48.png"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["*://*.slack.com/customize/emoji*"],
+      "js": ["jquery.js", "slackmoji.js"],
+      "css": ["style.css"]
+    }
+  ],
+
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+
+  "applications": {
+    "gecko": {
+      "id": "slackmoji@mozilla.org",
+      "strict_min_version": "45.0"
+    }
+  }
+
+}
