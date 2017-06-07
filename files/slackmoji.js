@@ -1,3 +1,7 @@
+if (window.location.href.match(/slackmoji/)) {
+  $('.btn').text("Add An Emoji!").attr('href', 'https://www.slack.com/customize/emoji');
+}
+
 var base = 'https://slackmoji.com';
 
 /*
@@ -106,7 +110,7 @@ $(function() {
   var $ae = $('#addemoji');
 
   // Add the section to the UI
-  $ae.before($("<div id='sm-categories'><div id='sm-search-parent'><div id='sm-search-loading'></div><input type='text' id='sm-search' autocomplete='off' placeholder='Search...'></div><h3>Categories</h3><ul id='sm-listcat'></ul><ul id='sm-listemoji'></ul><div id='sm-showcats'><a href='#'>View More Categories</a></div><div id='sm-credits'></div></div>"));
+  $ae.before($("<div id='sm-categories'><div id='sm-search-parent'><div id='sm-search-loading'></div><input type='text' id='sm-search' autocomplete='off' placeholder='Search...'></div><h3>Categories</h3><ul id='sm-listcat'></ul><ul id='sm-listemoji'></ul><div class='sm-nothing'>We couldn't find anything! <a href='mailto:gkoberger@gmail.com'>Email us and we can figure this out</a></div><div id='sm-showcats'><a href='#'>View More Categories</a></div><div id='sm-credits'></div></div>"));
 
   // Get a list of all categories
   $.get(base + '/cats', function(data) {
@@ -302,6 +306,7 @@ var utils = {
         }
       }
       $('#sm-back').click(function() {
+        $('.sm-nothing').hide();
         $('#sm-search').val("");
         $('#sm-credits').hide();
         $('.sm-loading').removeClass('sm-loading');
@@ -318,35 +323,40 @@ var utils = {
         });
       }
 
-      $.each(data, function(k, img) {
-        var id = String(k).replace(/^.*:/, '').replace(/[0-9]+$/, '');
-        var $li = $('<li>');
-        $li.append($('<div>', {'class': 'sm-add'}));
-        var $a = $('<a>', {'href': '#', class:'sm-edit'});
-        var $span = $('<span>', {'class': 'sm-edit-text'});
-        $span.append($('<i>', {'class': 'ts_icon_pencil ts_icon'}));
-        $span.append($('<span>', {'text': ' Edit Name'}));
-        $a.append($span);
-        $li.append($a);
-        $li.append($('<img>', {src: img.url, 'data-w': img.width, 'data-h': img.height, 'data-id': id}));
-        $li.append($('<strong>', {text: ':' + id + ':'}));
+      if (!Object.keys(data).length) {
+        $('.sm-nothing').show();
+      } else {
+        $.each(data, function(k, img) {
+          var id = String(k).replace(/^.*:/, '').replace(/[0-9]+$/, '');
+          var $li = $('<li>');
+          $li.append($('<div>', {'class': 'sm-add'}));
+          var $a = $('<a>', {'href': '#', class:'sm-edit'});
+          var $span = $('<span>', {'class': 'sm-edit-text'});
+          $span.append($('<i>', {'class': 'ts_icon_pencil ts_icon'}));
+          $span.append($('<span>', {'text': ' Edit Name'}));
+          $a.append($span);
+          $li.append($a);
+          $li.append($('<img>', {src: img.url, 'data-w': img.width, 'data-h': img.height, 'data-id': id}));
+          $li.append($('<strong>', {text: ':' + id + ':'}));
 
-        $('#sm-categories ul#sm-listemoji').append($li);
-        $('.sm-edit', $li).click(function() {
-          var $el = $(this).closest('li');
-          if($el.is('.sm-loading') || $el.is('.sm-success')) return false;
-          var name = prompt('What do you want to call this?', utils.slug($('img', $el).data('id')));
-          if(!name) return !!($el.removeClass('sm-loading') && false)
-          utils.uploadEmoji($('img', $el), name);
-          return false;
-        });
-        $li.click(function() {
-          var $el = $(this);
-          if($el.is('.sm-loading') || $el.is('.sm-success')) return;
-          utils.uploadEmoji($('img', this), $('img', this).data('id'));
-        });
+          $('#sm-categories ul#sm-listemoji').append($li);
+          $('.sm-edit', $li).click(function() {
+            var $el = $(this).closest('li');
+            if($el.is('.sm-loading') || $el.is('.sm-success')) return false;
+            var name = prompt('What do you want to call this?', utils.slug($('img', $el).data('id')));
+            if(!name) return !!($el.removeClass('sm-loading') && false)
+            utils.uploadEmoji($('img', $el), name);
+            return false;
+          });
+          $li.click(function() {
+            var $el = $(this);
+            if($el.is('.sm-loading') || $el.is('.sm-success')) return;
+            utils.uploadEmoji($('img', this), $('img', this).data('id'));
+          });
 
-      });
+        });
+        $('.sm-nothing').hide();
+      }
     });
   },
 
