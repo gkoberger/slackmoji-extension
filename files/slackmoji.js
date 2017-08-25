@@ -164,7 +164,7 @@ var utils = {
       if(src.match(/data:/)) {
         utils._uploadDirect(src, name, $el.closest('li'), cb);
       } else {
-        $.post(base + '/resize/', {
+        $.post(base + '/img-resize/', {
           'url': src,
           'width': w,
           'height': h,
